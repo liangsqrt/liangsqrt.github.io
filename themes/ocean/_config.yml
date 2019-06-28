@@ -1,9 +1,9 @@
 # Menu
 menu:
   Home: /
-  Archives: /archives
-  Gallery: /gallery
-  About: /about
+  文章: /archives
+  展览室: /gallery
+  关于作者: /about
 rss: /atom.xml
 
 
