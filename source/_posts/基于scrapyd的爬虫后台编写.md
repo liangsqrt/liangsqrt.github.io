@@ -165,5 +165,5 @@ resource = WSGIResource(reactor, reactor.getThreadPool(), self.app)
 return Site(WSGIRootResource(resource, self.resources), **options)
 ```
 
-![Untitled Diagram](/Users/liang/Downloads/Untitled Diagram.png)
+![twisted和flask的区别](基于scrapyd的爬虫后台编写/flash_twistd_diffence.png)
 

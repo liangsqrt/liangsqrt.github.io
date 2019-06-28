@@ -58,6 +58,55 @@
 
     
       
+        <article id="post-test1" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2019/06/29/test1/">test1</a>
+    </h2>
+  
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2019/06/29/test1/" class="article-date">
+  <time datetime="2019-06-28T17:14:20.000Z" itemprop="datePublished">2019-06-29</time>
+</a>
+        
+      </div>
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+      
+
+      
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/06/29/test1/" data-id="cjxgd4pyk0000h4tvqvl4v0hm" class="article-share-link">Share</a>
+      
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+
+
+
+      
         <article id="post-基于scrapyd的爬虫后台编写" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
@@ -120,12 +169,12 @@
 <h4 id="flask和twisted的关系"><a href="#flask和twisted的关系" class="headerlink" title="flask和twisted的关系"></a>flask和twisted的关系</h4><p>twisted是一个网络包，可以用来写爬虫，也可以用来做服务器，twisted搭建http服务的样子，跟另一个有名的包是一致的：tornada。 他们都是一款异步的框架，都可以支撑很高的并发。其中twisted甚至性能更加强悍一些。</p>
 <p>他们都可以搭建网站。twisted搭建网站的逻辑是在reactor负责总的网络管理。reactor中管理者site，一个site就是一个factory，就是可以直接监听一个端口，也可以被reactor监控的一个东西。在site中又有source，source就负责一个端口下的路径。所以twisted可以监听多个端口。而flask则不一样， flask只能监听一个端口，它的app概念对应的管理层级和twisted中site是一样的。而source就直接通过route的装饰器来定义完成了。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">resource = WSGIResource(reactor, reactor.getThreadPool(), self.app)</span><br><span class="line"><span class="keyword">return</span> Site(WSGIRootResource(resource, self.resources), **options)</span><br></pre></td></tr></table></figure>
-<p><img src="/Users/liang/Downloads/Untitled Diagram.png" alt="Untitled Diagram"></p>
+<p><img src="/2019/06/28/基于scrapyd的爬虫后台编写/flash_twistd_diffence.png" alt="twisted和flask的区别"></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/06/28/基于scrapyd的爬虫后台编写/" data-id="cjxg6ro8c0000y6tvn2s6irhe" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/06/28/基于scrapyd的爬虫后台编写/" data-id="cjxgd4pyo0001h4tv3ma1go2l" class="article-share-link">Share</a>
       
     </footer>
 
