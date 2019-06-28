@@ -5,10 +5,12 @@
   
   
   
+    <meta name="description" content="liangsqrt 的博客地址">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>
     
-    Hexo</title>
+    liangsqrt</title>
   
     <link rel="shortcut icon" href="/favicon.ico">
   
@@ -38,9 +40,9 @@
       <div class="video-overlay"></div>
     </div>
     <div class="video-inner text-center text-white">
-      <h1><a href="/">Hexo</a></h1>
-      <p></p>
-      <div><img src="/images/hexo-inverted.svg" class="brand" alt="Hexo"></div>
+      <h1><a href="/">liangsqrt</a></h1>
+      <p>liangsqrt&#39;s blog</p>
+      <div><img src="/images/hexo-inverted.svg" class="brand" alt="liangsqrt"></div>
     </div>
     <div class="video-learn-more">
       <a class="anchor" href="#landingpage"><i class="fe fe-mouse"></i></a>
@@ -56,7 +58,7 @@
 
     
       
-        <article id="post-test1" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+        <article id="post-基于scrapyd的爬虫后台编写" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
     
@@ -64,7 +66,7 @@
         
   
     <h2 itemprop="name">
-      <a class="article-title" href="/2019/06/27/test1/">test1</a>
+      <a class="article-title" href="/2019/06/28/基于scrapyd的爬虫后台编写/">基于scrapyd的爬虫后台编写</a>
     </h2>
   
 
@@ -73,8 +75,8 @@
 
     
       <div class="article-meta">
-        <a href="/2019/06/27/test1/" class="article-date">
-  <time datetime="2019-06-26T23:54:16.000Z" itemprop="datePublished">2019-06-27</time>
+        <a href="/2019/06/28/基于scrapyd的爬虫后台编写/" class="article-date">
+  <time datetime="2019-06-28T13:16:28.000Z" itemprop="datePublished">2019-06-28</time>
 </a>
         
       </div>
@@ -86,70 +88,44 @@
       
 
       
-        <h2 id="Hexo-测试篇"><a href="#Hexo-测试篇" class="headerlink" title="Hexo 测试篇"></a>Hexo 测试篇</h2><p>hexo是一个快捷的blog系统，可以帮组你快速记录你的博客笔记。</p>
+        <h4 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h4><p>因为开发某个交易平台的爬虫，需要在有交易更新之后爬取交易数据，之前的爬虫执行逻辑效果并不好，并且后来希望添加上监控功能、控制功能，同时增强可视化功能。考虑到这么多功能需要实现，干脆讲这些功能集成在一个后台里，直接做成爬虫后台算了。</p>
+<p><em>初步计划是基于scrapyd模板，通过jinja2来增强它的可视化，通过添加新的模块来增强它的控制能力</em></p>
+<p>涉及内容主要是：</p>
+<ul>
+<li>python安装包的基本概念</li>
+<li>jinja2模板的使用，配合twisted的使用</li>
+<li>scrapyd中twisted和flask的对应关系</li>
+<li>twisted的定时功能</li>
+</ul>
+<h4 id="Python-安装包"><a href="#Python-安装包" class="headerlink" title="Python 安装包"></a>Python 安装包</h4><p>在我们编写第三方包的时候，一般都会编写 <code>setup.py</code> 文件，最终我们安装我们编写的包的时候，一般都是 <code>python setup.py install</code> </p>
+<p>一般 <code>setup.py</code> 文件的格式是：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    <span class="keyword">from</span> setuptools <span class="keyword">import</span> setup</span><br><span class="line">    using_setuptools = <span class="literal">True</span></span><br><span class="line"><span class="keyword">except</span> ImportError:</span><br><span class="line">    <span class="keyword">from</span> distutils.core <span class="keyword">import</span> setup</span><br><span class="line">    using_setuptools = <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> os.path <span class="keyword">import</span> join, dirname</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> open(join(dirname(__file__), <span class="string">'scrapycontrol/VERSION'</span>)) <span class="keyword">as</span> f:</span><br><span class="line">    version = f.read().strip()  <span class="comment"># 读取version文件</span></span><br><span class="line"></span><br><span class="line">setup_args = &#123;</span><br><span class="line">    <span class="string">'name'</span>: <span class="string">'scrapycontrol'</span>,  <span class="comment"># 包的名称</span></span><br><span class="line">    <span class="string">'version'</span>: version,</span><br><span class="line">    <span class="string">'url'</span>: <span class="string">'http://www.liangsqrt.com'</span>,  <span class="comment"># 这个包的官方网站</span></span><br><span class="line">    <span class="string">'description'</span>: <span class="string">'mmonior scrapy project'</span>,  <span class="comment"># 对这个包的简单描述</span></span><br><span class="line">    <span class="string">'long_description'</span>: open(<span class="string">'README.rst'</span>).read(),  <span class="comment"># 详细的描述</span></span><br><span class="line">    <span class="string">'author'</span>: <span class="string">'liang'</span>,  <span class="comment"># 作者</span></span><br><span class="line">    <span class="string">'maintainer'</span>: <span class="string">'liang'</span>,  <span class="comment"># 维护者</span></span><br><span class="line">    <span class="string">'maintainer_email'</span>: <span class="string">'no!'</span>,  <span class="comment"># 维护者的email</span></span><br><span class="line">    <span class="string">'license'</span>: <span class="string">'BSD'</span>,  <span class="comment"># 遵守的开源协议  常见的MIT， BSD</span></span><br><span class="line">    <span class="string">'packages'</span>: [<span class="string">'scrapycontrol'</span>],  <span class="comment"># 需要打包的包的名称(目录)</span></span><br><span class="line">    <span class="string">'include_package_data'</span>: <span class="literal">True</span>,  <span class="comment"># 是否需要安装非python package东西，比如static静态文件，</span></span><br><span class="line">    <span class="string">'zip_safe'</span>: <span class="literal">False</span>,  <span class="comment">#  有时候python会将东西压缩在一个zip包里边来管理，避免包被污染。一般不用这个选项，因为有些python不支持zip格式。</span></span><br><span class="line">    <span class="string">'classifiers'</span>: [</span><br><span class="line">        <span class="string">'Programming Language :: Python'</span>,</span><br><span class="line">        <span class="string">'Programming Language :: Python :: 2.7'</span>,</span><br><span class="line">        <span class="string">'Programming Language :: Python :: 3'</span>,</span><br><span class="line">        <span class="string">'Programming Language :: Python :: 3.4'</span>,</span><br><span class="line">        <span class="string">'Programming Language :: Python :: 3.5'</span>,</span><br><span class="line">        <span class="string">'Programming Language :: Python :: 3.6'</span>,</span><br><span class="line">        <span class="string">'License :: OSI Approved :: BSD License'</span>,</span><br><span class="line">        <span class="string">'Operating System :: OS Independent'</span>,</span><br><span class="line">        <span class="string">'Development Status :: 5 - Production/Stable'</span>,</span><br><span class="line">        <span class="string">'Environment :: Console'</span>,</span><br><span class="line">        <span class="string">'Environment :: No Input/Output (Daemon)'</span>,</span><br><span class="line">        <span class="string">'Topic :: Internet :: WWW/HTTP'</span>,</span><br><span class="line">    ],</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> using_setuptools:  <span class="comment"># 这里依赖的包的版本</span></span><br><span class="line">    setup_args[<span class="string">'install_requires'</span>] = [</span><br><span class="line">        <span class="string">'Twisted&gt;=8.0'</span>,</span><br><span class="line">        <span class="string">'Scrapy&gt;=1.0'</span>,</span><br><span class="line">        <span class="string">'six'</span>,</span><br><span class="line">        <span class="string">'enum-compat'</span>,</span><br><span class="line">        <span class="string">'jinja2 &gt;= 2.9'</span></span><br><span class="line">    ]</span><br><span class="line">    setup_args[<span class="string">'entry_points'</span>] = &#123;<span class="string">'console_scripts'</span>: [</span><br><span class="line">        <span class="string">'scrapycontrol = scrapycontrol.scripts.scrapyd_run:main'</span></span><br><span class="line">    ]&#125;  <span class="comment"># 其他比如在系统只输入scrapycontrol 代表着什么。就是这里的run。</span></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    setup_args[<span class="string">'scripts'</span>] = [<span class="string">'scrapycontrol/scripts/scrapyd_run.py'</span>]</span><br><span class="line"></span><br><span class="line">setup(**setup_args)</span><br></pre></td></tr></table></figure>
+<h6 id="Todo"><a href="#Todo" class="headerlink" title="Todo:"></a>Todo:</h6><ul>
+<li>将执行指令写入到系统的环境变量中是如何做到的</li>
+<li>为什么安装了之后没有scrapycontrol文件夹</li>
+</ul>
+<h4 id="jinja2模板的时候"><a href="#jinja2模板的时候" class="headerlink" title="jinja2模板的时候"></a>jinja2模板的时候</h4><p>jinja2模板的使用方法和Django的模板十分像，这里总结我用到的几个方法：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;% block head %&#125;</span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">type</span>=<span class="string">"text/css"</span> <span class="attr">href</span>=<span class="string">"&#123;&#123; '/source/static/Semantic/semantic.min.css' &#125;&#125;"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span></span></span><br><span class="line"><span class="tag">  <span class="attr">src</span>=<span class="string">"source/static/jquery-3.1.1.min.js"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">integrity</span>=<span class="string">"sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="</span></span></span><br><span class="line"><span class="tag">  <span class="attr">crossorigin</span>=<span class="string">"anonymous"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"&#123;&#123; '/source/static/Semantic/semantic.min.js' &#125;&#125;"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Crontol board<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">&#123;% endblock head %&#125;</span><br></pre></td></tr></table></figure>
+<p>这是表示一个block段，当一个html文件中有这个一个块之后，就可以在其它的html中直接调用这个block就可以，而不需要重新写，这样写的好处就是减少了代码的编写量。</p>
+<p>for example</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"en"</span>&gt;</span></span><br><span class="line">&#123;% include 'header.html' %&#125;</span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"ui vertical inverted segment"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"ui inverted menu"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"ui item"</span>&gt;</span> status <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"ui item"</span> <span class="attr">href</span>=<span class="string">"/jobs"</span>&gt;</span> jobs <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"ui item"</span> <span class="attr">href</span>=<span class="string">"/logs"</span>&gt;</span> log <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"ui item"</span>&gt;</span> control board <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"ui item"</span>&gt;</span> configure <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">&#123;% include 'footer.html' %&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>就这样子，就直接将header和footer的内容引入了过来。</p>
+<p>twisted添加静态文件的方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">source_base = os.path.join(source_base, <span class="string">"source"</span>)</span><br><span class="line">self.putChild(<span class="string">b"source"</span>, static.File(source_base))</span><br></pre></td></tr></table></figure>
+<p>其实原理也比较好理解，每次当url中的路径的第一层是source的时候，自动去static.File中指定的路径中寻找。本质上静态文件的位置，就是一个http目录。所以直接存放在twisted的一个child中，也是完全合理的。</p>
+<p>Tips:</p>
+<ol>
+<li>在twisted中，如果使用jinja2模板，模板里边包含了静态文件，如果直接像上边代码这样引用，是会报找不到文件这种错误的。 原因是twisted并不知道你的静态文件在什么位置，<code>/source/static/Semantic/semantic.min.js&#39;</code> 所以这样代码，jinja2模板也找不到source所在的目录。这些设置一般都在web框架中设置好，jinja2 一般无法负责外部空间。</li>
+</ol>
+<h4 id="flask和twisted的关系"><a href="#flask和twisted的关系" class="headerlink" title="flask和twisted的关系"></a>flask和twisted的关系</h4><p>twisted是一个网络包，可以用来写爬虫，也可以用来做服务器，twisted搭建http服务的样子，跟另一个有名的包是一致的：tornada。 他们都是一款异步的框架，都可以支撑很高的并发。其中twisted甚至性能更加强悍一些。</p>
+<p>他们都可以搭建网站。twisted搭建网站的逻辑是在reactor负责总的网络管理。reactor中管理者site，一个site就是一个factory，就是可以直接监听一个端口，也可以被reactor监控的一个东西。在site中又有source，source就负责一个端口下的路径。所以twisted可以监听多个端口。而flask则不一样， flask只能监听一个端口，它的app概念对应的管理层级和twisted中site是一样的。而source就直接通过route的装饰器来定义完成了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">resource = WSGIResource(reactor, reactor.getThreadPool(), self.app)</span><br><span class="line"><span class="keyword">return</span> Site(WSGIRootResource(resource, self.resources), **options)</span><br></pre></td></tr></table></figure>
+<p><img src="/Users/liang/Downloads/Untitled Diagram.png" alt="Untitled Diagram"></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/06/27/test1/" data-id="cjxdwdeyd0001bwtvwjvm32lb" class="article-share-link">Share</a>
-      
-    </footer>
-
-  </div>
-
-  
-
-  
-
-</article>
-
-
-
-      
-        <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2019/06/27/hello-world/">Hello World</a>
-    </h2>
-  
-
-      </header>
-    
-
-    
-      <div class="article-meta">
-        <a href="/2019/06/27/hello-world/" class="article-date">
-  <time datetime="2019-06-26T23:50:26.223Z" itemprop="datePublished">2019-06-27</time>
-</a>
-        
-      </div>
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-      
-
-      
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/06/27/hello-world/" data-id="cjxdwdeya0000bwtvcmmdjtlb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/06/28/基于scrapyd的爬虫后台编写/" data-id="cjxg6ro8c0000y6tvn2s6irhe" class="article-share-link">Share</a>
       
     </footer>
 
@@ -183,7 +159,7 @@
 </ul>
     </div>
     <ul class="list-inline">
-      <li>&copy; 2019 Hexo</li>
+      <li>&copy; 2019 liangsqrt</li>
       <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
       <li>Theme  <a href="https://github.com/zhwangart/hexo-theme-ocean">Ocean</a></li>
     </ul>
@@ -197,25 +173,25 @@
 <nav class="navbar">
   
     <div class="logo">
-      <a href="/"><img src="/images/hexo.svg" alt="Hexo"></a>
+      <a href="/"><img src="/images/hexo.svg" alt="liangsqrt"></a>
     </div>
   
   <ul class="nav nav-main">
     
       <li class="nav-item">
-        <a class="nav-item-link" href="/">Home</a>
+        <a class="nav-item-link" href="/">主页</a>
       </li>
     
       <li class="nav-item">
-        <a class="nav-item-link" href="/archives">Archives</a>
+        <a class="nav-item-link" href="/archives">文章</a>
       </li>
     
       <li class="nav-item">
-        <a class="nav-item-link" href="/gallery">Gallery</a>
+        <a class="nav-item-link" href="/gallery">展览室</a>
       </li>
     
       <li class="nav-item">
-        <a class="nav-item-link" href="/about">About</a>
+        <a class="nav-item-link" href="/about">关于作者</a>
       </li>
     
     <li class="nav-item">
